@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cook Fine on a Dime - Swedish Budget Recipes</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Analytics - Add your tracking ID here -->
+    <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=GA_TRACKING_ID"></script> -->
+</head>
+<body>
+    <div class="loading" id="loading">
+        <div class="packman">🍽️</div>
+        <p>Finding perfect recipes for you...</p>
+    </div>
+
+    <header>
+        <nav>
+            <div class="logo">
+                <div class="logo-icon">🍳</div>
+                <div class="logo-text">
+                    <h1>Cook Fine on a Dime</h1>
+                    <span class="logo-tagline">Make the most of what you have</span>
+                </div>
+            </div>
+            <div class="nav-actions">
+                <button class="nav-btn" onclick="openMealPlanner()">
+                    <i class="fas fa-calendar-alt"></i> Meal Planner
+                </button>
+                <button class="nav-btn" onclick="openRecipeBook()">
+                    <i class="fas fa-bookmark"></i> My Recipes
+                </button>
+                <button class="nav-btn" onclick="openSubmitRecipe()">
+                    <i class="fas fa-plus"></i> Submit Recipe
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero-search">
+            <div class="hero-content">
+                <h1>What would you like to cook with?</h1>
+                <p class="mission">Our mission: Help you make the most of your existing items at home</p>
+                <div class="main-search-container">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="mainSearch" placeholder="Type ingredients you have (e.g., eggs, milk, potatoes...)" onkeyup="handleMainSearch(event)">
+                        <button type="button" onclick="performMainSearch()" class="search-btn">
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="filters-section" id="filtersSection">
+            <div class="container">
+                <div class="filter-steps">
+                    <div class="filter-step active" id="typeFilter">
+                        <h3>What are you looking for?</h3>
+                        <div class="filter-options">
+                            <button class="filter-btn" data-type="quick" onclick="selectMealType('quick')">
+                                <i class="fas fa-clock"></i>
+                                <span>Quick Meals</span>
+                                <small>Ready in 30 min</small>
+                            </button>
+                            <button class="filter-btn" data-type="budget" onclick="selectMealType('budget')">
+                                <i class="fas fa-piggy-bank"></i>
+                                <span>Budget Meals</span>
+                                <small>Under 25kr per serving</small>
+                            </button>
+                            <button class="filter-btn" data-type="both" onclick="selectMealType('both')">
+                                <i class="fas fa-star"></i>
+                                <span>Both</span>
+                                <small>Quick & Budget-friendly</small>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="filter-step hidden" id="dietaryFilter">
+                        <h3>Any special dietary requirements?</h3>
+                        <div class="dietary-options">
+                            <button class="dietary-btn" data-diet="none" onclick="selectDietary('none')">
+                                <span>No special requirements</span>
+                            </button>
+                            <button class="dietary-btn" data-diet="halal" onclick="selectDietary('halal')">
+                                <i class="fas fa-crescent-moon"></i> Halal
+                            </button>
+                            <button class="dietary-btn" data-diet="kosher" onclick="selectDietary('kosher')">
+                                <i class="fas fa-star-of-david"></i> Kosher
+                            </button>
+                            <button class="dietary-btn" data-diet="vegan" onclick="selectDietary('vegan')">
+                                <i class="fas fa-leaf"></i> Vegan
+                            </button>
+                            <button class="dietary-btn" data-diet="vegetarian" onclick="selectDietary('vegetarian')">
+                                <i class="fas fa-seedling"></i> Vegetarian
+                            </button>
+                            <button class="dietary-btn" data-diet="gluten-free" onclick="selectDietary('gluten-free')">
+                                <i class="fas fa-wheat"></i> Gluten-Free
+                            </button>
+                            <button class="dietary-btn" data-diet="paleo" onclick="selectDietary('paleo')">
+                                <i class="fas fa-mountain"></i> Paleo
+                            </button>
+                            <button class="dietary-btn" data-diet="lactose-free" onclick="selectDietary('lactose-free')">
+                                <i class="fas fa-ban"></i> Lactose-Free
+                            </button>
+                        </div>
+                        <button class="continue-btn" onclick="showResults()" id="continueBtn">Find My Recipes</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="quick-ingredients" id="quickIngredients">
+            <div class="container">
+                <h3>Or select from common ingredients:</h3>
+                <div class="collapsible-content">
+                    <button class="collapse-toggle" onclick="toggleQuickIngredients()">
+                        <span>Show ingredient options</span> <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="ingredient-grid hidden" id="ingredientGrid">
+                
+                <div class="ingredient-grid">
+                    <label class="ingredient-item">
+                        <input type="checkbox" value="eggs" onchange="updateIngredients()">
+                        <span>🥚 Eggs</span>
+                    </label>
+                    
+                    <label class="ingredient-item">
+                        <input type="checkbox" value="milk" onchange="updateIngredients()">
+                        <span>🥛 Milk</span>
+                    </label>
+                    
+                    <label class="ingredient-item">
+                        <input type="checkbox" value="bread" onchange="updateIngredients()">
+                        <span>🍞 Bread</span>
+                    </label>
+                    
+                    <label class="ingredient-item">
+                        <input type="checkbox" value="butter" onchange="updateIngredients()">
+                        <span>🧈 Butter</span>
+                    </label>
+                    
+                    <label class="ingredient-item">
+                        <input type="checkbox" value="flour" onchange="updateIngredients()">
+                        <span>🌾 Flour</span>
+                    </label>
+                    
+                    <label class="ingredient-item">
+                        <input type="checkbox" value="cheese" onchange="updateIngredients()">
+                        <span>🧀 Cheese</span>
+                    </label>
+                    
+                    <label class="ingredient-item">
+                        <input type="checkbox" value="potatoes" onchange="updateIngredients()">
+                        <span>🥔 Potatoes</span>
+                    </label>
+                    
+                    <label class="ingredient-item">
+                        <input type="checkbox" value="onion" onchange="updateIngredients()">
+                        <span>🧅 Onion</span>
+                    </label>
+                    
+                    <label class="ingredient-item">
+                        <input type="checkbox" value="meat" onchange="updateIngredients()">
+                        <span>🥩 Meat (any)</span>
+                    </label>
+                    
+                    <label class="ingredient-item">
+                        <input type="checkbox" value="pasta" onchange="updateIngredients()">
+                        <span>🍝 Pasta</span>
+                    </label>
+                    
+                    <label class="ingredient-item">
+                        <input type="checkbox" value="rice" onchange="updateIngredients()">
+                        <span>🍚 Rice</span>
+                    </label>
+                    
+                    <label class="ingredient-item">
+                        <input type="checkbox" value="vegetables" onchange="updateIngredients()">
+                        <span>🥕 Mixed Vegetables</span>
+                    </label>
+                </div>
+                    </div>
+                    <button class="ingredient-search-btn" onclick="findRecipesFromIngredients()">Find Recipes with Selected Ingredients</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="results-section hidden" id="resultsSection">
+            <div class="container">
+                <div class="results-header">
+                    <h2 id="resultsTitle">Recipes for you</h2>
+                    <div class="results-filters">
+                        <select id="sortBy" onchange="sortResults()">
+                            <option value="popularity">Most Popular</option>
+                            <option value="cost">Lowest Cost</option>
+                            <option value="time">Quickest</option>
+                            <option value="rating">Highest Rated</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="recipe-grid" id="recipeGrid">
+                    <!-- Recipes will be dynamically loaded here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Recipe Modal -->
+    <div class="modal-overlay hidden" id="recipeModal">
+        <div class="modal-content recipe-modal">
+            <div class="modal-header">
+                <button class="modal-close" onclick="closeModal('recipeModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="recipeModalBody">
+                <!-- Recipe content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Meal Planner Modal -->
+    <div class="modal-overlay hidden" id="mealPlannerModal">
+        <div class="modal-content meal-planner-modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-calendar-alt"></i> Smart Meal Planner</h2>
+                <button class="modal-close" onclick="closeModal('mealPlannerModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="mealPlannerBody">
+                <!-- Meal planner content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Recipe Book Modal -->
+    <div class="modal-overlay hidden" id="recipeBookModal">
+        <div class="modal-content recipe-book-modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-bookmark"></i> My Recipe Book</h2>
+                <button class="modal-close" onclick="closeModal('recipeBookModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="recipeBookBody">
+                <!-- Recipe book content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Submit Recipe Modal -->
+    <div class="modal-overlay hidden" id="submitRecipeModal">
+        <div class="modal-content submit-recipe-modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-plus"></i> Submit Your Recipe</h2>
+                <button class="modal-close" onclick="closeModal('submitRecipeModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="submitRecipeBody">
+                <!-- Submit recipe form will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>🍽️ Cook Fine on a Dime - Making the most of what you have!</p>
+            <p>Prices sourced from ICA, Coop, Lidl & other Swedish retailers</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
