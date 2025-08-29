@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Bank - Cook Fine on a Dime</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="recipe-bank-page">
+    <header>
+        <nav>
+            <div class="logo">
+                <div class="logo-icon">🍳</div>
+                <div class="logo-text">
+                    <h1>Cook Fine on a Dime</h1>
+                    <span class="logo-tagline">Make the most of what you have</span>
+                </div>
+            </div>
+            <div class="nav-actions">
+                <button class="nav-btn home" onclick="window.location.href='index.html'">
+                    <i class="fas fa-home"></i> Home
+                </button>
+                <button class="nav-btn meal-planner" onclick="openMealPlanner()">
+                    <i class="fas fa-calendar-alt"></i> Meal Planner
+                </button>
+                <button class="nav-btn favorites" onclick="openMyFavorites()">
+                    <i class="fas fa-heart"></i> My Favorites
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="recipe-bank-hero">
+            <div class="container">
+                <h1>Recipe Bank</h1>
+                <p>Discover all our budget-friendly Swedish recipes</p>
+                
+                <div class="recipe-filters">
+                    <div class="search-container">
+                        <input type="text" id="recipeSearch" placeholder="Search recipes..." onkeyup="filterRecipes()">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    
+                    <div class="filter-options">
+                        <select id="categoryFilter" onchange="filterRecipes()">
+                            <option value="all">All Categories</option>
+                            <option value="breakfast">Breakfast</option>
+                            <option value="lunch">Lunch</option>
+                            <option value="dinner">Dinner</option>
+                            <option value="quick">Quick Meals (≤30 min)</option>
+                            <option value="budget">Super Budget (≤15 kr)</option>
+                        </select>
+                        
+                        <select id="dietaryFilter" onchange="filterRecipes()">
+                            <option value="all">All Diets</option>
+                            <option value="vegetarian">Vegetarian</option>
+                            <option value="vegan">Vegan</option>
+                            <option value="gluten-free">Gluten-Free</option>
+                            <option value="halal">Halal</option>
+                            <option value="kosher">Kosher</option>
+                            <option value="lactose-free">Lactose-Free</option>
+                        </select>
+                        
+                        <select id="sortFilter" onchange="filterRecipes()">
+                            <option value="popular">Most Popular</option>
+                            <option value="cost-low">Lowest Cost</option>
+                            <option value="time">Quickest</option>
+                            <option value="rating">Highest Rated</option>
+                            <option value="name">Alphabetical</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="recipe-gallery">
+            <div class="container">
+                <div class="gallery-stats">
+                    <span id="recipeCount">Loading recipes...</span>
+                    <button class="view-toggle" onclick="toggleView()" id="viewToggle">
+                        <i class="fas fa-th-large"></i> Grid View
+                    </button>
+                </div>
+                
+                <div class="recipe-gallery-grid" id="recipeGallery">
+                    <!-- Recipes will be loaded here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Recipe Modal -->
+    <div class="modal-overlay hidden" id="recipeModal">
+        <div class="modal-content recipe-modal">
+            <div class="modal-header">
+                <button class="modal-close" onclick="closeModal('recipeModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="recipeModalBody">
+                <!-- Recipe content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal-overlay hidden" id="loginModal">
+        <div class="modal-content login-modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-user"></i> Login Required</h2>
+                <button class="modal-close" onclick="closeModal('loginModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="loginModalBody">
+                <!-- Login form will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- My Favorites Modal -->
+    <div class="modal-overlay hidden" id="myFavoritesModal">
+        <div class="modal-content favorites-modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-heart"></i> My Favorites</h2>
+                <button class="modal-close" onclick="closeModal('myFavoritesModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="myFavoritesBody">
+                <!-- Favorites content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Meal Planner Modal -->
+    <div class="modal-overlay hidden" id="mealPlannerModal">
+        <div class="modal-content meal-planner-modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-calendar-alt"></i> Smart Meal Planner</h2>
+                <button class="modal-close" onclick="closeModal('mealPlannerModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="mealPlannerBody">
+                <!-- Meal planner content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>🍽️ Cook Fine on a Dime - Making the most of what you have!</p>
+            <p>Prices sourced from ICA, Coop, Lidl & other Swedish retailers</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Recipe Bank specific functionality
+        let currentView = 'grid';
+        let filteredRecipes = [...recipeDatabase];
+
+        function loadRecipeBank() {
+            filterRecipes();
+        }
+
+        function filterRecipes() {
+            const searchTerm = document.getElementById('recipeSearch').value.toLowerCase();
+            const category = document.getElementById('categoryFilter').value;
+            const dietary = document.getElementById('dietaryFilter').value;
+            const sort = document.getElementById('sortFilter').value;
+
+            // Filter recipes
+            filteredRecipes = recipeDatabase.filter(recipe => {
+                // Search filter
+                const matchesSearch = recipe.name.toLowerCase().includes(searchTerm) || 
+                                    recipe.description.toLowerCase().includes(searchTerm) ||
+                                    recipe.ingredients.some(ing => ing.toLowerCase().includes(searchTerm));
+                
+                // Category filter
+                const matchesCategory = category === 'all' || 
+                                      (category === 'quick' && recipe.time <= 30) ||
+                                      (category === 'budget' && recipe.cost <= 15) ||
+                                      (category === 'breakfast' && (recipe.name.toLowerCase().includes('breakfast') || recipe.name.toLowerCase().includes('pannkakor'))) ||
+                                      (category === 'lunch' && recipe.time <= 30) ||
+                                      (category === 'dinner' && recipe.time > 30);
+                
+                // Dietary filter
+                const matchesDietary = dietary === 'all' || 
+                                     recipe.dietary.includes(dietary) || 
+                                     recipe.dietary.includes(dietary + '-option');
+                
+                return matchesSearch && matchesCategory && matchesDietary;
+            });
+
+            // Sort recipes
+            filteredRecipes.sort((a, b) => {
+                switch(sort) {
+                    case 'cost-low': return a.cost - b.cost;
+                    case 'time': return a.time - b.time;
+                    case 'rating': return b.rating - a.rating;
+                    case 'name': return a.name.localeCompare(b.name);
+                    case 'popular':
+                    default: return b.mealPlanCount - a.mealPlanCount;
+                }
+            });
+
+            displayRecipeGallery();
+            updateStats();
+        }
+
+        function displayRecipeGallery() {
+            const gallery = document.getElementById('recipeGallery');
+            
+            if (filteredRecipes.length === 0) {
+                gallery.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-search"></i>
+                        <h3>No recipes found</h3>
+                        <p>Try adjusting your filters or search terms</p>
+                    </div>
+                `;
+                return;
+            }
+
+            gallery.innerHTML = filteredRecipes.map(recipe => `
+                <div class="recipe-gallery-item ${currentView}" onclick="openRecipeModal('${recipe.id}')">
+                    <div class="recipe-image-container">
+                        <img src="${recipe.image}" alt="${recipe.name}" loading="lazy">
+                        <div class="dietary-icons">
+                            ${recipe.dietary.map(diet => getDietaryIcon(diet)).join('')}
+                        </div>
+                        <div class="recipe-overlay">
+                            <div class="recipe-actions">
+                                <button class="action-btn" onclick="event.stopPropagation(); toggleFavorite('${recipe.id}')" 
+                                        id="fav-${recipe.id}" title="Add to Favorites">
+                                    <i class="fas fa-heart${favoriteRecipes.includes(recipe.id) ? '' : '-o'}"></i>
+                                </button>
+                                <button class="action-btn" onclick="event.stopPropagation(); showSubstitutions('${recipe.id}')" 
+                                        title="Ingredient Substitutions">
+                                    <i class="fas fa-exchange-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="recipe-info">
+                        <h3 class="recipe-title">${recipe.name}</h3>
+                        <p class="recipe-description">${recipe.description}</p>
+                        
+                        <div class="recipe-stats-row">
+                            <div class="stat-item time">
+                                <i class="fas fa-clock"></i>
+                                <span>${recipe.time} min</span>
+                            </div>
+                            <div class="stat-item cost">
+                                <i class="fas fa-coins"></i>
+                                <span>${recipe.cost} kr</span>
+                            </div>
+                            <div class="stat-item servings">
+                                <i class="fas fa-users"></i>
+                                <span>${recipe.servings}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="recipe-rating-row">
+                            <div class="rating">
+                                ${generateStars(recipe.rating)}
+                                <span class="rating-text">${recipe.rating} (${recipe.ratingCount})</span>
+                            </div>
+                            <div class="popularity">
+                                <i class="fas fa-fire"></i>
+                                <span>${recipe.mealPlanCount} planned</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getDietaryIcon(dietary) {
+            const icons = {
+                'vegetarian': '<span class="dietary-icon vegetarian" title="Vegetarian">🌱</span>',
+                'vegan': '<span class="dietary-icon vegan" title="Vegan">🌿</span>',
+                'vegan-option': '<span class="dietary-icon vegan" title="Vegan Option">🌿</span>',
+                'gluten-free': '<span class="dietary-icon gluten-free" title="Gluten Free">🌾</span>',
+                'halal': '<span class="dietary-icon halal" title="Halal">☪️</span>',
+                'halal-option': '<span class="dietary-icon halal" title="Halal Option">☪️</span>',
+                'kosher': '<span class="dietary-icon kosher" title="Kosher">✡️</span>',
+                'lactose-free': '<span class="dietary-icon lactose-free" title="Lactose Free">🥛</span>',
+                'paleo': '<span class="dietary-icon paleo" title="Paleo">🦕</span>'
+            };
+            return icons[dietary] || '';
+        }
+
+        function updateStats() {
+            const countElement = document.getElementById('recipeCount');
+            countElement.textContent = `Showing ${filteredRecipes.length} of ${recipeDatabase.length} recipes`;
+        }
+
+        function toggleView() {
+            const gallery = document.getElementById('recipeGallery');
+            const toggle = document.getElementById('viewToggle');
+            
+            if (currentView === 'grid') {
+                currentView = 'list';
+                gallery.classList.add('list-view');
+                toggle.innerHTML = '<i class="fas fa-th"></i> List View';
+            } else {
+                currentView = 'grid';
+                gallery.classList.remove('list-view');
+                toggle.innerHTML = '<i class="fas fa-th-large"></i> Grid View';
+            }
+            
+            displayRecipeGallery();
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadRecipeBank();
+        });
+    </script>
+</body>
+</html>

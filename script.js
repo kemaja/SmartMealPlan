@@ -8,6 +8,8 @@ let currentRecipes = [];
 let userRatings = JSON.parse(localStorage.getItem('userRatings') || '{}');
 let favoriteRecipes = JSON.parse(localStorage.getItem('favoriteRecipes') || '[]');
 let userMealPlan = JSON.parse(localStorage.getItem('userMealPlan') || '{}');
+let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+let registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '{}');
 
 // Recipe database with enhanced details
 const recipeDatabase = [
@@ -110,7 +112,151 @@ const recipeDatabase = [
             'Cook with pork and vegetables for 2 hours',
             'Season with salt and pepper',
             'Serve with mustard and crisp bread'
+        ],
+        video: 'https://www.youtube.com/embed/dQw4w9WgXcQ'
+    },
+    {
+        id: 'pasta-carbonara',
+        name: 'Budget Carbonara',
+        ingredients: ['pasta', 'eggs', 'cheese'],
+        image: 'grilled-cheese.jpg',
+        time: 15,
+        cost: 12,
+        servings: 2,
+        dietary: ['vegetarian'],
+        rating: 4.6,
+        ratingCount: 324,
+        mealPlanCount: 278,
+        description: 'Creamy pasta without cream - just eggs and cheese',
+        instructions: [
+            'Cook pasta until al dente',
+            'Mix eggs and grated cheese in bowl',
+            'Toss hot pasta with egg mixture off heat',
+            'Season with pepper and serve immediately'
+        ],
+        video: 'https://www.youtube.com/embed/dQw4w9WgXcQ'
+    },
+    {
+        id: 'rice-and-beans',
+        name: 'Swedish Rice & Bean Bowl',
+        ingredients: ['rice', 'vegetables', 'onion'],
+        image: 'artsoppa.jpg',
+        time: 25,
+        cost: 9,
+        servings: 4,
+        dietary: ['vegan', 'gluten-free'],
+        rating: 4.1,
+        ratingCount: 156,
+        mealPlanCount: 145,
+        description: 'Complete protein meal with Swedish herbs',
+        instructions: [
+            'Cook rice according to package directions',
+            'Sauté onion and mixed vegetables',
+            'Add cooked beans and Swedish seasonings',
+            'Serve over rice with lingonberry sauce'
         ]
+    },
+    {
+        id: 'egg-fried-rice',
+        name: 'Swedish Egg Fried Rice',
+        ingredients: ['rice', 'eggs', 'vegetables'],
+        image: 'pannkakor.jpg',
+        time: 12,
+        cost: 11,
+        servings: 3,
+        dietary: ['vegetarian', 'gluten-free'],
+        rating: 4.3,
+        ratingCount: 198,
+        mealPlanCount: 167,
+        description: 'Quick fried rice with Swedish twist',
+        instructions: [
+            'Use day-old rice for best texture',
+            'Scramble eggs and set aside',
+            'Stir-fry rice with vegetables',
+            'Add eggs back and season with dill'
+        ]
+    },
+    {
+        id: 'potato-soup',
+        name: 'Creamy Potato Soup',
+        ingredients: ['potatoes', 'milk', 'butter'],
+        image: 'hasselback.jpg',
+        time: 35,
+        cost: 13,
+        servings: 4,
+        dietary: ['vegetarian', 'gluten-free'],
+        rating: 4.4,
+        ratingCount: 201,
+        mealPlanCount: 123,
+        description: 'Hearty soup perfect for cold days',
+        instructions: [
+            'Dice potatoes and boil until tender',
+            'Mash half the potatoes for thickness',
+            'Add milk and butter, season well',
+            'Garnish with chives and serve hot'
+        ],
+        video: 'https://www.youtube.com/embed/dQw4w9WgXcQ'
+    },
+    {
+        id: 'veggie-pasta',
+        name: 'Garden Veggie Pasta',
+        ingredients: ['pasta', 'vegetables', 'cheese'],
+        image: 'kottbullar.jpg',
+        time: 18,
+        cost: 14,
+        servings: 3,
+        dietary: ['vegetarian'],
+        rating: 4.2,
+        ratingCount: 167,
+        mealPlanCount: 189,
+        description: 'Fresh vegetables with pasta and cheese',
+        instructions: [
+            'Cook pasta until al dente',
+            'Sauté seasonal vegetables until tender',
+            'Toss pasta with vegetables',
+            'Top with grated cheese and herbs'
+        ]
+    },
+    {
+        id: 'meat-and-potatoes',
+        name: 'Simple Meat & Potatoes',
+        ingredients: ['meat', 'potatoes', 'vegetables'],
+        image: 'kottbullar.jpg',
+        time: 40,
+        cost: 19,
+        servings: 4,
+        dietary: ['gluten-free'],
+        rating: 4.5,
+        ratingCount: 289,
+        mealPlanCount: 245,
+        description: 'Classic comfort food combination',
+        instructions: [
+            'Season and brown meat in pan',
+            'Add diced potatoes and vegetables',
+            'Cover and simmer until tender',
+            'Serve with Swedish mustard'
+        ]
+    },
+    {
+        id: 'breakfast-bowl',
+        name: 'Swedish Breakfast Bowl',
+        ingredients: ['eggs', 'potatoes', 'cheese'],
+        image: 'pannkakor.jpg',
+        time: 20,
+        cost: 16,
+        servings: 2,
+        dietary: ['vegetarian', 'gluten-free'],
+        rating: 4.7,
+        ratingCount: 178,
+        mealPlanCount: 234,
+        description: 'Hearty breakfast to start your day',
+        instructions: [
+            'Roast diced potatoes until crispy',
+            'Fry or scramble eggs to preference',
+            'Layer in bowl with cheese',
+            'Season with salt, pepper, and herbs'
+        ],
+        video: 'https://www.youtube.com/embed/dQw4w9WgXcQ'
     }
 ];
 
@@ -386,46 +532,6 @@ function sortResults() {
     trackEvent('sort', 'recipes', sortBy);
 }
 
-// Quick ingredients functionality
-function toggleQuickIngredients() {
-    const ingredientGrid = document.getElementById('ingredientGrid');
-    const toggle = document.querySelector('.collapse-toggle');
-    
-    ingredientGrid.classList.toggle('hidden');
-    
-    if (ingredientGrid.classList.contains('hidden')) {
-        toggle.innerHTML = '<span>Show ingredient options</span> <i class="fas fa-chevron-down"></i>';
-    } else {
-        toggle.innerHTML = '<span>Hide ingredient options</span> <i class="fas fa-chevron-up"></i>';
-    }
-}
-
-function updateIngredients() {
-    selectedIngredients = [];
-    const checkboxes = document.querySelectorAll('.ingredient-item input[type="checkbox"]:checked');
-    checkboxes.forEach(checkbox => {
-        selectedIngredients.push(checkbox.value);
-    });
-}
-
-function findRecipesFromIngredients() {
-    updateIngredients();
-    if (selectedIngredients.length === 0) {
-        alert('Please select at least one ingredient');
-        return;
-    }
-    
-    // Skip filters and show results directly
-    selectedMealType = 'both';
-    selectedDietary = 'none';
-    filterRecipes();
-    
-    const resultsSection = document.getElementById('resultsSection');
-    resultsSection.classList.remove('hidden');
-    resultsSection.scrollIntoView({ behavior: 'smooth' });
-    
-    document.getElementById('resultsTitle').textContent = `Recipes with ${selectedIngredients.join(', ')}`;
-}
 
 // Modal functionality
 function openRecipeModal(recipeId) {
@@ -442,6 +548,12 @@ function openRecipeModal(recipeId) {
         <div class="recipe-header">
             <div class="recipe-image-container">
                 <img src="${recipe.image}" alt="${recipe.name}" class="recipe-image">
+                ${recipe.video ? `
+                    <div class="recipe-video">
+                        <h4>Watch How to Make It:</h4>
+                        <iframe width="100%" height="315" src="${recipe.video}" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                ` : ''}
             </div>
             <div class="recipe-meta">
                 <h1>${recipe.name}</h1>
@@ -566,8 +678,143 @@ function openRecipeModal(recipeId) {
     trackEvent('recipe', 'view_recipe', recipeId);
 }
 
+// Authentication functions
+function checkLogin() {
+    return currentUser !== null;
+}
+
+function requireLogin(callback, feature = 'this feature') {
+    if (!checkLogin()) {
+        showLoginModal(callback, feature);
+        return false;
+    }
+    return true;
+}
+
+function showLoginModal(callback = null, feature = 'this feature') {
+    const modal = document.getElementById('loginModal');
+    const modalBody = document.getElementById('loginModalBody');
+    
+    modalBody.innerHTML = `
+        <div class="login-form">
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchAuthTab('login')">Login</button>
+                <button class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</button>
+            </div>
+            
+            <div id="loginTab" class="auth-content">
+                <h3>Welcome Back!</h3>
+                <p>Login to access ${feature}</p>
+                <form onsubmit="handleLogin(event)" class="auth-form">
+                    <input type="email" id="loginEmail" placeholder="Email" required>
+                    <input type="password" id="loginPassword" placeholder="Password" required>
+                    <button type="submit" class="auth-button">Login</button>
+                </form>
+            </div>
+            
+            <div id="signupTab" class="auth-content hidden">
+                <h3>Join Us!</h3>
+                <p>Create an account to save favorites and meal plans</p>
+                <form onsubmit="handleSignup(event)" class="auth-form">
+                    <input type="text" id="signupName" placeholder="Full Name" required>
+                    <input type="email" id="signupEmail" placeholder="Email" required>
+                    <input type="password" id="signupPassword" placeholder="Password" minlength="6" required>
+                    <input type="password" id="signupConfirm" placeholder="Confirm Password" required>
+                    <button type="submit" class="auth-button">Sign Up</button>
+                </form>
+            </div>
+        </div>
+    `;
+    
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    
+    // Store callback for after login
+    modal.dataset.callback = callback ? callback.toString() : '';
+}
+
+function switchAuthTab(tab) {
+    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.auth-content').forEach(c => c.classList.add('hidden'));
+    
+    document.querySelector(`[onclick="switchAuthTab('${tab}')"]`).classList.add('active');
+    document.getElementById(`${tab}Tab`).classList.remove('hidden');
+}
+
+function handleLogin(event) {
+    event.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    
+    if (registeredUsers[email] && registeredUsers[email].password === password) {
+        currentUser = {
+            email: email,
+            name: registeredUsers[email].name
+        };
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        
+        alert(`Welcome back, ${currentUser.name}!`);
+        closeModal('loginModal');
+        
+        // Execute callback if exists
+        const modal = document.getElementById('loginModal');
+        if (modal.dataset.callback) {
+            eval(modal.dataset.callback);
+        }
+        
+        trackEvent('auth', 'login_success', email);
+    } else {
+        alert('Invalid email or password');
+    }
+}
+
+function handleSignup(event) {
+    event.preventDefault();
+    const name = document.getElementById('signupName').value;
+    const email = document.getElementById('signupEmail').value;
+    const password = document.getElementById('signupPassword').value;
+    const confirm = document.getElementById('signupConfirm').value;
+    
+    if (password !== confirm) {
+        alert('Passwords do not match');
+        return;
+    }
+    
+    if (registeredUsers[email]) {
+        alert('Account already exists with this email');
+        return;
+    }
+    
+    registeredUsers[email] = {
+        name: name,
+        password: password,
+        createdAt: new Date().toISOString()
+    };
+    
+    localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+    
+    currentUser = { email: email, name: name };
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    
+    alert(`Welcome to Cook Fine on a Dime, ${name}!`);
+    closeModal('loginModal');
+    
+    trackEvent('auth', 'signup_success', email);
+}
+
+function logout() {
+    currentUser = null;
+    localStorage.removeItem('currentUser');
+    alert('You have been logged out');
+    trackEvent('auth', 'logout');
+}
+
 // Navigation modal functions
 function openMealPlanner() {
+    if (!requireLogin(() => openMealPlanner(), 'meal planner with PDF download')) {
+        return;
+    }
+    
     const modal = document.getElementById('mealPlannerModal');
     const modalBody = document.getElementById('mealPlannerBody');
     
@@ -634,7 +881,10 @@ function openMealPlanner() {
                     </div>
                 `).join('')}
             </div>
-            <button class="cta-button" onclick="saveMealPlan()">Save Meal Plan</button>
+            <div class="meal-plan-actions">
+                <button class="cta-button" onclick="saveMealPlan()">Save Meal Plan</button>
+                <button class="cta-button secondary" onclick="downloadMealPlanPDF()">Download PDF</button>
+            </div>
         </div>
     `;
     
@@ -644,32 +894,69 @@ function openMealPlanner() {
     trackEvent('modal', 'open_meal_planner');
 }
 
-function openRecipeBook() {
+function openRecipeBank() {
     const modal = document.getElementById('recipeBookModal');
     const modalBody = document.getElementById('recipeBookBody');
     
     modalBody.innerHTML = `
         <div class="recipe-book-tabs">
-            <button class="tab-btn active" onclick="showRecipeBookTab('favorites')">
-                <i class="fas fa-heart"></i> Favorites (${favoriteRecipes.length})
+            <button class="tab-btn active" onclick="showRecipeBookTab('all')">
+                <i class="fas fa-book"></i> All Recipes (${recipeDatabase.length})
             </button>
-            <button class="tab-btn" onclick="showRecipeBookTab('custom')">
-                <i class="fas fa-plus"></i> My Recipes
+            <button class="tab-btn" onclick="showRecipeBookTab('categories')">
+                <i class="fas fa-tags"></i> Categories
             </button>
-            <button class="tab-btn" onclick="showRecipeBookTab('planned')">
-                <i class="fas fa-calendar"></i> Meal Plan
+            <button class="tab-btn" onclick="showRecipeBookTab('popular')">
+                <i class="fas fa-fire"></i> Most Popular
             </button>
         </div>
         
         <div class="recipe-book-content" id="recipeBookContent">
-            ${renderFavoriteRecipes()}
+            ${renderAllRecipes()}
         </div>
     `;
     
     modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
     
-    trackEvent('modal', 'open_recipe_book');
+    trackEvent('modal', 'open_recipe_bank');
+}
+
+function openMyFavorites() {
+    if (!requireLogin(() => openMyFavorites(), 'your saved favorites')) {
+        return;
+    }
+    
+    const modal = document.getElementById('myFavoritesModal');
+    const modalBody = document.getElementById('myFavoritesBody');
+    
+    modalBody.innerHTML = `
+        <div class="favorites-content">
+            <div class="user-info">
+                <h3>Welcome, ${currentUser.name}!</h3>
+                <p>Your saved favorite recipes (${favoriteRecipes.length})</p>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+            
+            ${favoriteRecipes.length === 0 ? `
+                <div class="empty-favorites">
+                    <i class="fas fa-heart-broken"></i>
+                    <h3>No favorites yet</h3>
+                    <p>Start exploring recipes and click the heart icon to save your favorites!</p>
+                    <button class="cta-button" onclick="closeModal('myFavoritesModal')">Browse Recipes</button>
+                </div>
+            ` : `
+                <div class="favorites-grid">
+                    ${renderFavoriteRecipes()}
+                </div>
+            `}
+        </div>
+    `;
+    
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    
+    trackEvent('modal', 'open_my_favorites');
 }
 
 function openSubmitRecipe() {
@@ -852,14 +1139,81 @@ function renderFavoriteRecipes() {
     `;
 }
 
-// Initialize page
-document.addEventListener('DOMContentLoaded', function() {
-    // Auto-hide quick ingredients initially
-    const quickIngredients = document.getElementById('quickIngredients');
-    if (quickIngredients) {
-        quickIngredients.classList.add('hidden');
+function renderAllRecipes() {
+    return `
+        <div class="recipe-grid">
+            ${recipeDatabase.map(recipe => `
+                <div class="recipe-card" onclick="openRecipeModal('${recipe.id}')">
+                    <img src="${recipe.image}" alt="${recipe.name}">
+                    <div class="recipe-info">
+                        <h4>${recipe.name}</h4>
+                        <p class="recipe-cost">Cost: ${recipe.cost} kr per serving</p>
+                        <p class="recipe-time">Time: ${recipe.time} minutes</p>
+                        <div class="recipe-rating">
+                            ${generateStars(recipe.rating)} (${recipe.ratingCount})
+                        </div>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+function downloadMealPlanPDF() {
+    // Create PDF content
+    const mealPlan = {};
+    document.querySelectorAll('.meal-slot.filled').forEach(slot => {
+        const day = slot.closest('.calendar-day').querySelector('h4').textContent;
+        const meal = slot.getAttribute('data-meal');
+        if (!mealPlan[day]) mealPlan[day] = {};
+        mealPlan[day][meal] = slot.textContent;
+    });
+    
+    if (Object.keys(mealPlan).length === 0) {
+        alert('Please generate a meal plan first before downloading PDF');
+        return;
     }
     
+    // Create PDF content as text (in a real app, you'd use a PDF library)
+    let pdfContent = `
+COOK FINE ON A DIME - WEEKLY MEAL PLAN
+Generated for: ${currentUser.name}
+Date: ${new Date().toLocaleDateString()}
+
+=============================================
+
+`;
+    
+    Object.entries(mealPlan).forEach(([day, meals]) => {
+        pdfContent += `${day.toUpperCase()}\\n`;
+        pdfContent += '─────────────────\\n';
+        Object.entries(meals).forEach(([mealType, recipeName]) => {
+            pdfContent += `${mealType.charAt(0).toUpperCase() + mealType.slice(1)}: ${recipeName}\\n`;
+        });
+        pdfContent += '\\n';
+    });
+    
+    pdfContent += `
+=============================================
+Enjoy your week of delicious, budget-friendly meals!
+Visit cookfineonadime.com for more recipes.
+`;
+    
+    // Create and download file
+    const blob = new Blob([pdfContent], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `meal-plan-${new Date().toISOString().split('T')[0]}.txt`;
+    link.click();
+    URL.revokeObjectURL(url);
+    
+    alert('Meal plan downloaded! (Note: In a real app, this would be a formatted PDF)');
+    trackEvent('meal_planner', 'download_pdf');
+}
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
     // Initialize filter section as hidden
     const filtersSection = document.getElementById('filtersSection');
     if (filtersSection) {
@@ -870,6 +1224,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const mainSearch = document.getElementById('mainSearch');
     if (mainSearch) {
         mainSearch.focus();
+    }
+    
+    // Show login status if logged in
+    if (currentUser) {
+        console.log(`Welcome back, ${currentUser.name}!`);
     }
 });
 
@@ -892,7 +1251,7 @@ function generateMealPlan() {
         const meals = ['breakfast', 'lunch', 'dinner'];
         const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
         
-        days.forEach((dayName, dayIndex) => {
+        days.forEach((day, dayIndex) => {
             meals.forEach(meal => {
                 const slot = document.querySelector(`.calendar-day:nth-child(${dayIndex + 1}) [data-meal="${meal}"]`);
                 if (slot && Math.random() > 0.3) { // 70% chance to fill slot
@@ -989,21 +1348,97 @@ function createVariation(recipeId) {
 function showSubstitutions(recipeId) {
     const recipe = recipeDatabase.find(r => r.id === recipeId);
     const substitutions = {
-        'eggs': 'flax eggs, applesauce, or banana',
-        'milk': 'oat milk, almond milk, or soy milk',
-        'butter': 'coconut oil, olive oil, or margarine',
-        'flour': 'almond flour, rice flour, or oat flour',
-        'meat': 'mushrooms, lentils, or plant-based alternatives'
+        'eggs': [
+            { name: 'Flax Eggs', desc: '1 tbsp ground flaxseed + 3 tbsp water per egg' },
+            { name: 'Applesauce', desc: '¼ cup unsweetened applesauce per egg' },
+            { name: 'Banana', desc: '¼ mashed banana per egg (adds sweetness)' },
+            { name: 'Yogurt', desc: '¼ cup plain yogurt per egg' }
+        ],
+        'milk': [
+            { name: 'Oat Milk', desc: 'Same amount, creamy texture' },
+            { name: 'Almond Milk', desc: 'Same amount, lighter flavor' },
+            { name: 'Soy Milk', desc: 'Same amount, protein-rich' },
+            { name: 'Coconut Milk', desc: 'Same amount, rich and creamy' }
+        ],
+        'butter': [
+            { name: 'Coconut Oil', desc: 'Same amount, solid at room temp' },
+            { name: 'Olive Oil', desc: '¾ the amount, liquid' },
+            { name: 'Yogurt', desc: '½ the amount, for baking' },
+            { name: 'Margarine', desc: 'Same amount, vegan option' }
+        ],
+        'flour': [
+            { name: 'Almond Flour', desc: '¾ the amount, nutty flavor' },
+            { name: 'Rice Flour', desc: 'Same amount, gluten-free' },
+            { name: 'Oat Flour', desc: 'Same amount, slightly sweet' },
+            { name: 'Coconut Flour', desc: '¼ the amount, very absorbent' }
+        ],
+        'cheese': [
+            { name: 'Nutritional Yeast', desc: '2 tbsp per ¼ cup cheese, cheesy flavor' },
+            { name: 'Cashew Cheese', desc: 'Same amount, creamy texture' },
+            { name: 'Vegan Cheese', desc: 'Same amount, various flavors' }
+        ],
+        'meat': [
+            { name: 'Mushrooms', desc: 'Same weight, umami flavor' },
+            { name: 'Lentils', desc: 'Same weight cooked, protein-rich' },
+            { name: 'Tofu', desc: 'Same weight, absorbs flavors' },
+            { name: 'Tempeh', desc: 'Same weight, nutty flavor' }
+        ],
+        'potatoes': [
+            { name: 'Sweet Potatoes', desc: 'Same amount, sweeter flavor' },
+            { name: 'Cauliflower', desc: 'Same amount, lower carb' },
+            { name: 'Turnips', desc: 'Same amount, similar texture' }
+        ],
+        'pasta': [
+            { name: 'Zucchini Noodles', desc: 'Same amount, low carb' },
+            { name: 'Rice Noodles', desc: 'Same amount, gluten-free' },
+            { name: 'Lentil Pasta', desc: 'Same amount, high protein' }
+        ],
+        'rice': [
+            { name: 'Quinoa', desc: 'Same amount cooked, protein-rich' },
+            { name: 'Cauliflower Rice', desc: 'Same amount, low carb' },
+            { name: 'Brown Rice', desc: 'Same amount, more fiber' }
+        ]
     };
     
-    let substitutionText = 'Ingredient substitutions for dietary needs:\n\n';
-    recipe.ingredients.forEach(ingredient => {
-        if (substitutions[ingredient]) {
-            substitutionText += `${ingredient}: ${substitutions[ingredient]}\n`;
-        }
-    });
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-content substitution-modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-exchange-alt"></i> Ingredient Substitutions for ${recipe.name}</h2>
+                <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Here are healthy alternatives you can use:</p>
+                <div class="substitution-list">
+                    ${recipe.ingredients.map(ingredient => {
+                        const subs = substitutions[ingredient];
+                        if (!subs) return '';
+                        return `
+                            <div class="ingredient-substitution">
+                                <h4>Instead of ${ingredient.charAt(0).toUpperCase() + ingredient.slice(1)}:</h4>
+                                <div class="substitution-options">
+                                    ${subs.map(sub => `
+                                        <div class="substitution-option">
+                                            <strong>${sub.name}</strong>
+                                            <span class="substitution-desc">${sub.desc}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `;
+                    }).filter(Boolean).join('')}
+                </div>
+                ${recipe.ingredients.filter(ing => !substitutions[ing]).length > 0 ? `
+                    <div class="no-substitutions">
+                        <p><em>No common substitutions available for: ${recipe.ingredients.filter(ing => !substitutions[ing]).join(', ')}</em></p>
+                    </div>
+                ` : ''}
+            </div>
+        </div>
+    `;
     
-    alert(substitutionText);
+    document.body.appendChild(modal);
     trackEvent('recipe', 'view_substitutions', recipeId);
 }
 

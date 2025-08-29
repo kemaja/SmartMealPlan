@@ -26,13 +26,16 @@
                 </div>
             </div>
             <div class="nav-actions">
-                <button class="nav-btn" onclick="openMealPlanner()">
+                <button class="nav-btn recipe-bank" onclick="window.location.href='recipe-bank.html'">
+                    <i class="fas fa-book"></i> Recipe Bank
+                </button>
+                <button class="nav-btn meal-planner" onclick="openMealPlanner()">
                     <i class="fas fa-calendar-alt"></i> Meal Planner
                 </button>
-                <button class="nav-btn" onclick="openRecipeBook()">
-                    <i class="fas fa-bookmark"></i> My Recipes
+                <button class="nav-btn favorites" onclick="openMyFavorites()">
+                    <i class="fas fa-heart"></i> My Favorites
                 </button>
-                <button class="nav-btn" onclick="openSubmitRecipe()">
+                <button class="nav-btn submit" onclick="openSubmitRecipe()">
                     <i class="fas fa-plus"></i> Submit Recipe
                 </button>
             </div>
@@ -114,81 +117,6 @@
             </div>
         </section>
 
-        <section class="quick-ingredients" id="quickIngredients">
-            <div class="container">
-                <h3>Or select from common ingredients:</h3>
-                <div class="collapsible-content">
-                    <button class="collapse-toggle" onclick="toggleQuickIngredients()">
-                        <span>Show ingredient options</span> <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="ingredient-grid hidden" id="ingredientGrid">
-                
-                <div class="ingredient-grid">
-                    <label class="ingredient-item">
-                        <input type="checkbox" value="eggs" onchange="updateIngredients()">
-                        <span>🥚 Eggs</span>
-                    </label>
-                    
-                    <label class="ingredient-item">
-                        <input type="checkbox" value="milk" onchange="updateIngredients()">
-                        <span>🥛 Milk</span>
-                    </label>
-                    
-                    <label class="ingredient-item">
-                        <input type="checkbox" value="bread" onchange="updateIngredients()">
-                        <span>🍞 Bread</span>
-                    </label>
-                    
-                    <label class="ingredient-item">
-                        <input type="checkbox" value="butter" onchange="updateIngredients()">
-                        <span>🧈 Butter</span>
-                    </label>
-                    
-                    <label class="ingredient-item">
-                        <input type="checkbox" value="flour" onchange="updateIngredients()">
-                        <span>🌾 Flour</span>
-                    </label>
-                    
-                    <label class="ingredient-item">
-                        <input type="checkbox" value="cheese" onchange="updateIngredients()">
-                        <span>🧀 Cheese</span>
-                    </label>
-                    
-                    <label class="ingredient-item">
-                        <input type="checkbox" value="potatoes" onchange="updateIngredients()">
-                        <span>🥔 Potatoes</span>
-                    </label>
-                    
-                    <label class="ingredient-item">
-                        <input type="checkbox" value="onion" onchange="updateIngredients()">
-                        <span>🧅 Onion</span>
-                    </label>
-                    
-                    <label class="ingredient-item">
-                        <input type="checkbox" value="meat" onchange="updateIngredients()">
-                        <span>🥩 Meat (any)</span>
-                    </label>
-                    
-                    <label class="ingredient-item">
-                        <input type="checkbox" value="pasta" onchange="updateIngredients()">
-                        <span>🍝 Pasta</span>
-                    </label>
-                    
-                    <label class="ingredient-item">
-                        <input type="checkbox" value="rice" onchange="updateIngredients()">
-                        <span>🍚 Rice</span>
-                    </label>
-                    
-                    <label class="ingredient-item">
-                        <input type="checkbox" value="vegetables" onchange="updateIngredients()">
-                        <span>🥕 Mixed Vegetables</span>
-                    </label>
-                </div>
-                    </div>
-                    <button class="ingredient-search-btn" onclick="findRecipesFromIngredients()">Find Recipes with Selected Ingredients</button>
-                </div>
-            </div>
-        </section>
 
         <section class="results-section hidden" id="resultsSection">
             <div class="container">
@@ -257,6 +185,32 @@
             </div>
             <div class="modal-body" id="submitRecipeBody">
                 <!-- Submit recipe form will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal-overlay hidden" id="loginModal">
+        <div class="modal-content login-modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-user"></i> Login Required</h2>
+                <button class="modal-close" onclick="closeModal('loginModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="loginModalBody">
+                <!-- Login form will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- My Favorites Modal -->
+    <div class="modal-overlay hidden" id="myFavoritesModal">
+        <div class="modal-content favorites-modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-heart"></i> My Favorites</h2>
+                <button class="modal-close" onclick="closeModal('myFavoritesModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="myFavoritesBody">
+                <!-- Favorites content will be loaded here -->
             </div>
         </div>
     </div>
